@@ -1,0 +1,74 @@
+import java.util.NavigableSet;
+import java.util.TreeSet;
+import java.util.List;
+import java.util.ArrayList;
+
+class Schedule {
+    TreeSet<Event> scheduledEvents = new TreeSet<>();
+
+    public void addEvent(int startTime, String name) {
+        Event event = new Event();
+        event.start = startTime;
+        event.name = name;
+        scheduledEvents.add(event);
+    }
+
+    public NavigableSet<Event> tailSet(int startTime) {
+        Event event = new Event();
+        event.start = startTime;
+        return scheduledEvents.tailSet(event, true);
+    }
+
+    public List<Event> getEventsFrom(int startTime) {
+        NavigableSet<Event> tailSet = tailSet(startTime);
+        List<Event> result = new ArrayList<>();
+        result.addAll(tailSet);
+        return result;
+    }
+
+    public boolean hasOverlap() {
+        if (scheduledEvents.size() < 2) {
+            return false; // Нет пересечений, если меньше двух событий
+        }
+
+        List<Event> events = new ArrayList<>(scheduledEvents); // Копируем в список для доступа по индексу
+
+        for (int i = 0; i < events.size() - 1; i++) {
+            if (events.get(i).start < events.get(i + 1).start) {
+                // События упорядочены по времени начала, поэтому проверяем только соседние
+                // Если события пересекаются, то время окончания первого события должно быть больше времени начала второго
+                if (i > 0 && events.get(i - 1).start + 1 > events.get(i).start) { // Предположим, что событие длится 1 час
+                    return true; // Найдено пересечение
+                }
+            }
+        }
+        return false; // Пересечений не найдено
+    }
+
+    public static void main(String[] args) {
+        Schedule schedule = new Schedule();
+        schedule.addEvent(10, "Daily meeting");
+        schedule.addEvent(11, "Lunch with Tom");
+        schedule.addEvent(15, "Coffee break");
+        schedule.addEvent(17, "Weekly meeting");
+        schedule.addEvent(13, "Project meeting");
+
+        // Получение событий с 13:00
+        List<Event> events = schedule.getEventsFrom(13);
+        for (Event event : events) {
+            System.out.println(event.start + " - " + event.name);
+        }
+
+        System.out.println(schedule.hasOverlap()); // Проверка на пересечение событий
+    }
+}
+
+class Event implements Comparable<Event> {
+    int start;
+    String name;
+
+    @Override
+    public int compareTo(Event other) {
+        return Integer.compare(this.start, other.start);
+    }
+}
