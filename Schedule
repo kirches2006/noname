@@ -47,8 +47,6 @@ class Schedule {
 
     public static void main(String[] args) {
         Schedule schedule = new Schedule();
-        schedule.addEvent(10, "Daily meeting");
-        schedule.addEvent(11, "Lunch with Tom");
         schedule.addEvent(15, "Coffee break");
         schedule.addEvent(17, "Weekly meeting");
         schedule.addEvent(13, "Project meeting");
